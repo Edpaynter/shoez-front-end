@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ImageBackground, StyleSheet, Text, View } from "react-native";
+import {  ImageBackground, StyleSheet, Text, Pressable, View , Button} from "react-native";
 import  {useFetch}  from '../hooks/useFetch';
 
 const WelcomeScreen = ({ navigation }) => {
@@ -20,14 +20,18 @@ const WelcomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text>Welcome</Text>
       <Button
-        title="Go to Sign Up"
+        title="Sign Up"
         onPress={() => navigation.navigate("SignUp")}
       />
-      <Button
+          <Button
+        title="Log In"
+        onPress={() => navigation.navigate("LogIn")}
+      />
+      {/* <Button
         title="Go to Home"
         onPress={() => navigation.navigate("Welcome")}
       />
-      <Button title="Go back" onPress={() => navigation.goBack()} />
+      <Button title="Go back" onPress={() => navigation.goBack()} /> */}
     </View>
   );
 };

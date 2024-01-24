@@ -15,7 +15,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "jsEngine": "jsc",
+      "supportsTablet": true,
+      "bundleIdentifier": "true"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +28,12 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "49.0.0"
+    "sdkVersion": "49.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "54411174-2290-4acd-b4c1-d17d433de6f0"
+      }
+    }
   },
   "name": "my-app"
 }

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { API_KEY_TEMP } from "@env"
-let apiKey = API_KEY_TEMP;
+// import { API_KEY_TEMP } from "@env"
+let apiKey = 'API_KEY_TEMP';
 export const useFetch = (endpoint, query) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const options = {
+  const options: any = {
     method: "GET",
     header: {
       "API-key": apiKey,
@@ -24,7 +24,7 @@ export const useFetch = (endpoint, query) => {
       setIsLoading(false);
     } catch (err) {
       setError(err);
-      alert("There is an error in request");
+      // alert("There is an error in request");
     } finally {
       setIsLoading(false);
     }

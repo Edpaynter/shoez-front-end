@@ -8,7 +8,7 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().min(6, 'Too Short!').required('Required'),
 });
 
-const SignUpScreen = ({ navigation }) => {
+const LogInScreen = ({ navigation }) => {
   const handleLogin = (values) => {
     // Handle login logic here
     navigation.navigate('Dashboard');
@@ -44,7 +44,7 @@ const SignUpScreen = ({ navigation }) => {
             <Text style={styles.errorText}>{errors.password}</Text>
           )}
 
-          <Button onPress={handleSubmit} title="Sign Up" />
+          <Button onPress={handleSubmit} title="Login" />
 
           {/* Additional UI components or links can be added here */}
         </View>
@@ -70,4 +70,4 @@ const styles: any = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default LogInScreen;

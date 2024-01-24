@@ -1,0 +1,13 @@
+{
+    "skater": {
+        "skaterId": "UUID",
+        "name": "",
+        "height": "",
+        "shoeSize": "",
+        "zipCode": ""
+    },
+    "shoes": {
+        "shoesOwned": [],
+        "shoesWanted": []
+    }
+}
