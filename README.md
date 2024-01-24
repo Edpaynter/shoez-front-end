@@ -27,4 +27,5 @@ npm run start
 ```
 
 Once the app has started press "i" to enter expo go mode
+Scan the QR code from the terminal and that should open Expo go on your iPhone
 
