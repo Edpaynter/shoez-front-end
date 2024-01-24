@@ -26,3 +26,5 @@ npm run start
 
 ```
 
+Once the app has started press "i" to enter expo go mode
+
