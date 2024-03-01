@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 // import { API_KEY_TEMP } from "@env"
 let apiKey = 'API_KEY_TEMP';
-export const useFetch = (endpoint, query) => {
+export const useFetch = (endpoint, method, file) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const options: any = {
-    method: "GET",
+    method: method,
     header: {
-      "API-key": apiKey,
+      "Content-Type": "multipart/form-data",
     },
     url: `${endpoint}`,
-    params: { ...query },
+    data: { file }
+    // params: { ...query },
   };
 
   const fetchData = async () => {

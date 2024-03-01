@@ -33,7 +33,16 @@
       "eas": {
         "projectId": "54411174-2290-4acd-b4c1-d17d433de6f0"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Shoez to access your photos.",
+          "savePhotosPermission": "AllowShoez to save photos."
+        }
+      ]
+    ]
   },
   "name": "my-app"
 }
