@@ -4,70 +4,71 @@ import React, { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import * as Permissions from "expo-permissions";
 import CameraButton from "./CameraButton";
-import { useFetch } from "../hooks/useFetch";
 
-interface CameraComponentProps {
-  navigation: any;
-  onClose: () => void;
-}
-
-const CameraComponent: React.FC<CameraComponentProps> = ({ navigation }) => {
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [image, setImage] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type["back"]);
+const CameraComponent = ({ navigation }) => {
+  const cameraRef: any = useRef();
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(false);
+  const [image, setImage] = useState(undefined);
+  const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode["off"]);
-  
   const [state, setState] = useState({});
-
-  const processImage = async (image) => {
-     // POST request using fetch with error handling
-     let formData = new FormData();
-     formData.append('file' , image.uri)
-     const requestOptions = {
-      method: 'POST',
-      // headers: { 'Content-Type': 'application/json' },
-      body: formData
-  };
-  fetch('localhost:5000/classify-image', requestOptions)
-      .then(async response => {
-          // const isJson = response.headers.get('content-type')?.includes('application/json');
-          const data = await response.json();
-        console.log(data);
-          // check for error response
-          if (!response.ok) {
-              // get error message from body or default to response status
-              const error = (data && data.message) || response.status;
-              return Promise.reject(error);
-          }
-
-          setState({ postId: data.id })
-      })
-      .catch(error => {
-          setState({ errorMessage: error.toString() });
-          console.error('There was an error!', error);
-      });
-  };
-
-  const cameraRef: any = useRef(null);
 
   useEffect(() => {
     (async () => {
-      await MediaLibrary.requestPermissionsAsync();
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      console.log("Camera Status", cameraStatus);
-      setHasCameraPermission(cameraStatus.status === "granted");
+      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      
+      setHasCameraPermission(cameraPermission.status === 'granted');
+      setHasMediaLibraryPermission(mediaLibraryPermission.status === 'granted')
     })();
   }, []);
+
+ 
+
+  const processImage = async (image) => {
+    // POST request using fetch with error handling
+    let formData = new FormData();
+    formData.append('file', image)
+ 
+    const requestOptions: any = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData
+    };
+
+    fetch('http://10.0.0.156:5000/classify-image', requestOptions)
+      .then(async response => {
+        // const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data: any = await response.json();
+        console.log('Data From Fetch Response', data);
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+        setState({ postId: data.id })
+      })
+      .catch(error => {
+        setState({ errorMessage: error.toString() });
+        console.error('There was an error!', error);
+      });
+  };
+
+
+
 
   const handleTakePicture = async () => {
     if (cameraRef) {
       try {
-        // const options = { quality: 0.5, base64: true };
-        const data = await cameraRef.current?.takePictureAsync();
+        const options = { quality: 1, base64: true, exif: false };
+        const data = await cameraRef.current?.takePictureAsync(options);
         setImage(data.uri);
-        await processImage(data);
         console.log("DataUri", data.uri);
       } catch (e) {
         console.log("Error", e);
@@ -78,9 +79,9 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ navigation }) => {
   const handleSaveImage = async () => {
     if (image) {
       try {
-        await MediaLibrary.createAssetAsync(image);
-     
-        alert("Picture saved! Woo!");
+        await MediaLibrary.saveToLibraryAsync(image)
+        await processImage(image);
+        alert("Picture saved to cameraroll");
         setImage(null);
       } catch (e) {
         console.log(e);
@@ -92,8 +93,17 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ navigation }) => {
     navigation.navigate("Dashboard");
   };
 
-  if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
+  if (!hasCameraPermission) {
+    return (
+      <View
+        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
+      >
+        <Text style={{ textAlign: "center" }}>
+          We need access to your camera
+        </Text>
+        <CameraButton onPress={setHasCameraPermission(true)} title={"Grant permission"} icon="retweet" color={'red'} />
+      </View>
+    );
   }
 
   return (
@@ -114,25 +124,19 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ navigation }) => {
           >
             <CameraButton
               icon="retweet"
-              onPress={() =>
-                setType(
-                  type === CameraType.back ? CameraType.front : CameraType.back,
-                )
-              }
-            />
+              onPress={() => setType(
+                type === CameraType.back ? CameraType.front : CameraType.back
+              )} title={undefined} color={undefined}            />
             <CameraButton
               icon="flash"
-              color={
-                flash === Camera.Constants.FlashMode.off ? "gray" : "#f1f1f1"
-              }
+              color={flash === Camera.Constants.FlashMode.off ? "gray" : "#f1f1f1"}
               onPress={() => {
                 setFlash(
-                  flash === Camera.Constants.FlashMode.off
-                    ? Camera.Constants.FlashMode.on
-                    : Camera.Constants.FlashMode.off,
+                  flash === Camera.Constants.FlashMode['off']
+                    ? Camera.Constants.FlashMode['on']
+                    : Camera.Constants.FlashMode['off']
                 );
-              }}
-            />
+              } } title={undefined}            />
           </View>
         </Camera>
       ) : (
@@ -153,20 +157,17 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ navigation }) => {
               icon="retweet"
               onPress={() => {
                 setImage(null);
-              }}
-            />
+              } } color={undefined}            />
             <CameraButton
               title={"Save"}
               icon="check"
-              onPress={handleSaveImage}
-            />
+              onPress={handleSaveImage} color={undefined}            />
           </View>
         ) : (
           <CameraButton
-            title={"Take a picture"}
-            icon="camera"
-            onPress={handleTakePicture}
-          />
+              title={"Take a picture"}
+              icon="camera"
+              onPress={handleTakePicture} color={undefined}          />
         )}
       </View>
     </View>
