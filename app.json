@@ -39,7 +39,8 @@
         "expo-media-library",
         {
           "photosPermission": "Allow Shoez to access your photos.",
-          "savePhotosPermission": "AllowShoez to save photos."
+          "savePhotosPermission": "AllowShoez to save photos.",
+          "isAccessMediaLocationEnabled" : "true"
         }
       ]
     ]
